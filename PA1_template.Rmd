@@ -28,15 +28,25 @@ y<-as.Date(indata$date,"%Y-%m-%d")
 # average per day
 aggtotal<-aggregate(indata$steps,by=list(y),FUN=sum)
 hist(as.vector(aggtotal[,2]),breaks=10,main="Histogram of total steps per day",xlab="Total steps per day", ylab="Frequency")
-#Mean and median steps
-dmean<-mean(aggtotal[,2])
-dmed<-median(aggtotal[,2])
+#Mean and median steps per day
+
+aggmeanday<-aggregate(indata$steps,by=list(y),FUN=mean)
+aggmedianday<-aggregate(indata$steps,by=list(y),FUN=median)
+names(aggmeanday)<-c("Date","Mean_steps")
+names(aggmedianday)<-c("Date","Median_steps")
+aggday<-merge(aggmeanday,aggmedianday,by="Date")
+
+# mean steps per interval
 agginterval<-aggregate(indata$steps,by=list(indata$interval),FUN=mean)
+
 
 ```
 
 ## What is mean total number of steps taken per day?
-Mean and median of the total number of steps per day is `r format(dmean,scientific=FALSE)`, `r format(dmed,scientific=FALSE)`, respectively
+Mean and Median total number of steps per day is listed below;
+```{r tablevalues, echo=TRUE}
+print(aggday,row.names=FALSE)
+```
 
 ## What is the average daily activity pattern?
 
@@ -61,17 +71,20 @@ yall<-as.Date(indatafull$date,"%Y-%m-%d")
 aggtotalall<-aggregate(indatafull$steps,by=list(yall),FUN=sum)
 hist(as.vector(aggtotalall[,2]),breaks=10,main="Histogram of total steps per day after Imputing",xlab="Total steps per day", ylab="Frequency")
 str(aggtotalall)
-dmeanall<-mean(aggtotalall[,2])
-dmedall<-median(aggtotalall[,2])
+aggallmeanday<-aggregate(indatafull$steps,by=list(yall),FUN=mean)
+aggallmedianday<-aggregate(indatafull$steps,by=list(yall),FUN=median)
+names(aggallmeanday)<-c("Date","Mean steps per day")
+names(aggallmedianday)<-c("Date","Median steps per day")
+aggallday<-merge(aggallmeanday,aggallmedianday,by="Date")
 ```
 The number of rows with data missing on steps are `r nimpute`.
-After imputing, the mean and the median of the total number of steps per day is `r format(dmeanall,scientific=FALSE)`, `r format(dmedall,scientific=FALSE)`, respectively
-The percent difference in mean activity before and after imputation is 
-`r format((dmean-dmeanall)*100/dmean,scientific=FALSE)`.
-The percent difference in median activity before and after imputation is 
-`r format((dmed-dmedall)*100/dmed,scientific=FALSE)`.
+After imputing, the mean and the median of the total number of steps per day is  shown below;
+```{r imputeday,echo="TRUE"}
+print(aggallday,rownames="FALSE")
+```
 
-The  missing values did not significantly impact the mean and the median measures.
+
+Imputing the missing values, the median steps per day was non-zero for some days. Before imputing, the median steps per day was zero for all days. The mean values did not vary significantly after imputing. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 ```{r days,echo=TRUE}
