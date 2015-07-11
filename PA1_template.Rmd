@@ -106,6 +106,7 @@ str(indatafull)
 # compute average activity per interval
 aggperiod<-aggregate(indatafull$steps,by=list(indatafull$interval,indatafull$period),FUN=mean)
 str(aggperiod)
+
 #plot
 qplot(Group.1,x,data=aggperiod,facets=.~Group.2,geom=c("line","smooth"),method="lm",main="Comparison of activity over Weekend and Weekdays",xlab="Interval",ylab="Average steps")
 

@@ -199,3 +199,4 @@ qplot(Group.1,x,data=aggperiod,facets=.~Group.2,geom=c("line","smooth"),method="
 ![plot of chunk days](figure/days-1.png) 
 
 Looking at the regression fit lines, the average activity over the weekend appears to be higher than that over the weekdays. The time-series plot during the weekdays shows that the average activity during the early intervals is higher than the later intervals. The time-series plot during the weekends, suggest that the average activity remains similar throughout the day.
+
