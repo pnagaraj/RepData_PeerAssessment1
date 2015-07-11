@@ -29,6 +29,9 @@ y<-as.Date(indata$date,"%Y-%m-%d")
 aggtotal<-aggregate(indata$steps,by=list(y),FUN=sum)
 hist(as.vector(aggtotal[,2]),breaks=10,main="Histogram of total steps per day",xlab="Total steps per day", ylab="Frequency")
 #Mean and median steps per day
+names(aggtotal)<-c("Date","steps")
+dmean<-mean(aggtotal$steps)
+dmed<-median(aggtotal$steps)
 
 aggmeanday<-aggregate(indata$steps,by=list(y),FUN=mean)
 aggmedianday<-aggregate(indata$steps,by=list(y),FUN=median)
@@ -44,9 +47,10 @@ agginterval<-aggregate(indata$steps,by=list(indata$interval),FUN=mean)
 
 ## What is mean total number of steps taken per day?
 Mean and Median total number of steps per day is listed below;
-```{r tablevalues, echo=TRUE}
-print(aggday,row.names=FALSE)
-```
+
+Mean = `r format(dmean,scientific=FALSE)`
+
+Median = `r format(dmed,scientific=FALSE)`
 
 ## What is the average daily activity pattern?
 
@@ -70,28 +74,29 @@ indatafull$steps[is.na(indatafull$steps)]<-mean(indatafull$steps,na.rm=TRUE)
 yall<-as.Date(indatafull$date,"%Y-%m-%d")
 aggtotalall<-aggregate(indatafull$steps,by=list(yall),FUN=sum)
 hist(as.vector(aggtotalall[,2]),breaks=10,main="Histogram of total steps per day after Imputing",xlab="Total steps per day", ylab="Frequency")
+
+
+names(aggtotalall)<-c("Date","steps")
 str(aggtotalall)
-aggallmeanday<-aggregate(indatafull$steps,by=list(yall),FUN=mean)
-aggallmedianday<-aggregate(indatafull$steps,by=list(yall),FUN=median)
-names(aggallmeanday)<-c("Date","Mean steps per day")
-names(aggallmedianday)<-c("Date","Median steps per day")
-aggallday<-merge(aggallmeanday,aggallmedianday,by="Date")
+dmeanall<-mean(aggtotalall$steps)
+dmedall<-median(aggtotalall$steps)
 ```
 The number of rows with data missing on steps are `r nimpute`.
 After imputing, the mean and the median of the total number of steps per day is  shown below;
-```{r imputeday,echo="TRUE"}
-print(aggallday,rownames="FALSE")
-```
+
+Mean steps = `r format(dmeanall,scientific=FALSE)`
+
+Median steps = `r format(dmedall,scientific=FALSE)`
 
 
-Imputing the missing values, the median steps per day was non-zero for some days. Before imputing, the median steps per day was zero for all days. The mean values did not vary significantly after imputing. 
+After imputing the missing values, the median steps count and the mean steps count did not change signifiantly compared to before imputing the missing values.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 ```{r days,echo=TRUE}
 library(ggplot2)
 # get weekday information
 indatafull$day<-weekdays(as.Date(indatafull$date,"%Y-%m-%d"))
-#indatafull$period<-ifelse(indatafull$day=="Saturday" | indatafull$day=="Sunday","Weekend","Weekday")
+
 # create factor variable using Weekday information
 indatafull$period<-factor(indatafull$day=="Saturday" | indatafull$day=="Sunday")
 levels(indatafull$period)[levels(indatafull$period)=="TRUE"]<-"Weekend"
