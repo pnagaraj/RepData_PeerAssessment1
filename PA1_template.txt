@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
@@ -72,7 +67,7 @@ aggtotal<-aggregate(indata$steps,by=list(y),FUN=sum)
 hist(as.vector(aggtotal[,2]),breaks=10,main="Histogram of total steps per day",xlab="Total steps per day", ylab="Frequency")
 ```
 
-![plot of chunk meantotal](figure/meantotal-1.png) 
+![](PA1_template_files/figure-html/meantotal-1.png) 
 
 ```r
 #Mean and median steps per day
@@ -160,7 +155,7 @@ agginterval<-aggregate(indata$steps,by=list(indata$interval),FUN=mean)
 plot(agginterval[,1],agginterval[,2],type="l",main="Average daily activity pattern",xlab="five minute interval",ylab="Average steps")
 ```
 
-![plot of chunk pattern](figure/pattern-1.png) 
+![](PA1_template_files/figure-html/pattern-1.png) 
 
 ```r
 index<-which.max(agginterval[,2])
@@ -181,7 +176,7 @@ aggtotalall<-aggregate(indatafull$steps,by=list(yall),FUN=sum)
 hist(as.vector(aggtotalall[,2]),breaks=10,main="Histogram of total steps per day after Imputing",xlab="Total steps per day", ylab="Frequency")
 ```
 
-![plot of chunk impute](figure/impute-1.png) 
+![](PA1_template_files/figure-html/impute-1.png) 
 
 ```r
 str(aggtotalall)
@@ -317,6 +312,6 @@ str(aggperiod)
 qplot(Group.1,x,data=aggperiod,facets=.~Group.2,geom=c("line","smooth"),method="lm",main="Comparison of activity over Weekend and Weekdays",xlab="Interval",ylab="Average steps")
 ```
 
-![plot of chunk days](figure/days-1.png) 
+![](PA1_template_files/figure-html/days-1.png) 
 
 Looking at the regression fit lines, the average activity over the weekend appears to be higher than that over the weekdays. The time-series plot during the weekdays shows that the average activity during the early intervals is higher than the later intervals. The time-series plot during the weekends, suggest that the average activity remains similar throughout the day.
