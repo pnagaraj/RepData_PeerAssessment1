@@ -8,18 +8,90 @@ output:
 
 ## Loading and preprocessing the data
 
+```{r setoptions, echo=TRUE}
+library("knitr")
+require('knitr')
+opts_chunk$set(echo=TRUE,results=TRUE)
+indata<-read.csv("activity.csv")
+# check summary of the data
+head(indata)
+summary(indata)
+colnames(indata)
+str(indata)
 
+```
+## Calculate mean total number of steps taken per day
+```{r meantotal,echo=TRUE}
+indata<-subset(indata,!(is.na(indata$steps)))
+                                 
+y<-as.Date(indata$date,"%Y-%m-%d")
+# average per day
+aggtotal<-aggregate(indata$steps,by=list(y),FUN=sum)
+hist(as.vector(aggtotal[,2]),breaks=10,main="Histogram of total steps per day",xlab="Total steps per day", ylab="Frequency")
+#Mean and median steps
+dmean<-mean(aggtotal[,2])
+dmed<-median(aggtotal[,2])
+agginterval<-aggregate(indata$steps,by=list(indata$interval),FUN=mean)
+
+```
 
 ## What is mean total number of steps taken per day?
-
-
+Mean and median of the total number of steps per day is `r format(dmean,scientific=FALSE)`, `r format(dmed,scientific=FALSE)`, respectively
 
 ## What is the average daily activity pattern?
 
+```{r pattern, echo=TRUE}
+# average daily activity vs interval
+agginterval<-aggregate(indata$steps,by=list(indata$interval),FUN=mean)
+plot(agginterval[,1],agginterval[,2],type="l",main="Average daily activity pattern",xlab="five minute interval",ylab="Average steps")
+index<-which.max(agginterval[,2])
 
+```
+The average daily activity pattern is maximum during the interval `r format(agginterval[index,1])`.
 
 ## Imputing missing values
+```{r impute,echo=TRUE}
+indatafull<-read.csv("activity.csv")
+a<-is.na(indatafull$steps)
+nimpute<-sum(a)
+#fill missing values by means
+indatafull$steps[is.na(indatafull$steps)]<-mean(indatafull$steps,na.rm=TRUE)
+# average per day
+yall<-as.Date(indatafull$date,"%Y-%m-%d")
+aggtotalall<-aggregate(indatafull$steps,by=list(yall),FUN=sum)
+hist(as.vector(aggtotalall[,2]),breaks=10,main="Histogram of total steps per day after Imputing",xlab="Total steps per day", ylab="Frequency")
+str(aggtotalall)
+dmeanall<-mean(aggtotalall[,2])
+dmedall<-median(aggtotalall[,2])
+```
+The number of rows with data missing on steps are `r nimpute`.
+After imputing, the mean and the median of the total number of steps per day is `r format(dmeanall,scientific=FALSE)`, `r format(dmedall,scientific=FALSE)`, respectively
+The percent difference in mean activity before and after imputation is 
+`r format((dmean-dmeanall)*100/dmean,scientific=FALSE)`.
+The percent difference in median activity before and after imputation is 
+`r format((dmed-dmedall)*100/dmed,scientific=FALSE)`.
 
-
+The  missing values did not significantly impact the mean and the median measures.
 
 ## Are there differences in activity patterns between weekdays and weekends?
+```{r days,echo=TRUE}
+library(ggplot2)
+# get weekday information
+indatafull$day<-weekdays(as.Date(indatafull$date,"%Y-%m-%d"))
+#indatafull$period<-ifelse(indatafull$day=="Saturday" | indatafull$day=="Sunday","Weekend","Weekday")
+# create factor variable using Weekday information
+indatafull$period<-factor(indatafull$day=="Saturday" | indatafull$day=="Sunday")
+levels(indatafull$period)[levels(indatafull$period)=="TRUE"]<-"Weekend"
+levels(indatafull$period)[levels(indatafull$period)=="FALSE"]<-"Weekday"
+# check the new structure of the imputed data after adding new column
+str(indatafull)
+# compute average activity per interval
+aggperiod<-aggregate(indatafull$steps,by=list(indatafull$interval,indatafull$period),FUN=mean)
+str(aggperiod)
+#plot
+qplot(Group.1,x,data=aggperiod,facets=.~Group.2,geom=c("line","smooth"),method="lm",main="Comparison of activity over Weekend and Weekdays",xlab="Interval",ylab="Average steps")
+
+
+```
+
+Looking at the regression fit lines, the average activity over the weekend appears to be higher than that over the weekdays. The time-series plot during the weekdays shows that the average activity during the early intervals is higher than the later intervals. The time-series plot during the weekends, suggest that the average activity remains similar throughout the day.
